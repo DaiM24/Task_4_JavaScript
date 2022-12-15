@@ -239,7 +239,7 @@ function card(data) {
   return `
   <div class="col event">
     <div class="card text-bg-dark h-100">
-      <img src="../assets/upcoming/cinema_3.jpg" class="card-img-top" alt="${data.name}">
+      <img src="/assets/upcoming/cinema_3.jpg" class="card-img-top" alt="${data.name}">
       <div class="card-body text-center d-flex flex-column justify-content-between">
         <h5 class="card-title">${data.name}</h5>
         <p class="card-text">${data.description}</p>
@@ -278,7 +278,7 @@ function viewDetail() {
   <div class="card text-bg-dark mb-3 m-auto" style="max-width: 900px;">
   <div class="row g-0 ">
     <div class="col-md-4">
-      <img src="../assets/upcoming/cinema_3.jpg" class="img-fluid rounded-start detail-img" alt="${events.name}">
+      <img src="/assets/upcoming/cinema_3.jpg" class="img-fluid rounded-start detail-img" alt="${events.name}">
     </div>
     <div class="col-md-8" >
       <div class="card-body h-100 d-flex flex-column justify-content-center">
