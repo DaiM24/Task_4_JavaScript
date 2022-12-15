@@ -178,7 +178,7 @@
 
 var allEvents = {}
 const pastEvents = [];
-const upcomingsaEvents = [];
+const upcomingsEvents = [];
 const categories = [];
 var actualEvents;
 var actualId;
@@ -188,10 +188,11 @@ var search = {input:"", seted: false};
 const getEventsAsync = async (url) => {
   const respose = await fetch(url)
   const dataEvents = await respose.json()
+  
   dataEvents.events.map(event =>{
     let dates = Date.parse(event.date);
   if (dates > Date.parse(dataEvents.currentDate)) {
-    upcomingsaEvents.push(event);
+    upcomingsEvents.push(event);
   } else {
     pastEvents.push(event);
   }
@@ -250,7 +251,7 @@ function card(data) {
     </div>
   </div>
   `;
-}
+};
 
 function noEvent() {
   const containerImg = document.querySelector(".no-event");
@@ -267,11 +268,11 @@ function noEvent() {
   </div>
   `;
   !document.getElementById('NoEvent')? containerImg.insertAdjacentHTML("beforeend", div) : null;
-}
+};
 
 function viewDetail() {
   let events = JSON.parse(localStorage.getItem('myEvent'));
-  localStorage.clear()
+  localStorage.clear();
   const containerDetail = document.querySelector("#container_detail");
   let div = `
   <div class="card text-bg-dark mb-3 m-auto" style="max-width: 900px;">
@@ -315,36 +316,6 @@ function createCards() {
   }
 };
 
-let URLactual = window.location.pathname.split("/").pop();
-
-function mainRender(id,eventos,flag){
-  flag ? null : selectCheck()
-  console.log(eventos)
-  actualEvents = eventos 
-
-  actualId = id
-  createCards();
-  checkListener();
-  searchEvent();
-  buttonListener();
-}
-
-const URLexists = async(flag) => {
-  if (URLactual === "index.html" || URLactual === "") {
-    allEvents = await getEventsAsync('./js/events.json'); 
-    mainRender("#container_home", allEvents.events, flag);
-  } else if (URLactual === "upcomings_events.html") {
-    allEvents = await getEventsAsync('../js/events.json');
-    mainRender("#container_upcoming", upcomingsaEvents, flag);
-  } else if (URLactual === "past_events.html") {
-    allEvents = await getEventsAsync('../js/events.json')
-    mainRender("#container_past", pastEvents, flag);
-  } else if (URLactual === "details.html"){
-  viewDetail();
-  }
-}
-window.onload = URLexists(false);
-
 function searchEvent(){
   const inputEvent = document.getElementById('search_event');
   inputEvent.addEventListener("keyup", (evento) => {
@@ -374,10 +345,116 @@ function buttonListener(){
   });
 };
 
+// Funciones de stats 
+
 const stats = () => {
-  const eventsStatics = document.getElementById('events_statistics');
+
+  const eventsStatistics = document.getElementById('events_statistics');
   const upcomingsEventsStatistics = document.getElementById('upcomings_events_statistics');
   const pastEventsStatistics = document.getElementById('past_events_statistics');
+  let statsEvent = []
+  allEvents.events.map((event) => {
+    let assistance = event.assistance || event.estimate
+     statsEvent.push({
+        name: event.name,
+        capacity: event.capacity,
+        assistance,
+        porcentage: Math.round((assistance / event.capacity) * 100)
+    });
+  });
+
+  let sortPorcentage = eventsSort(statsEvent, 'porcentage'); 
+  let highest = sortPorcentage.slice(0, 5);
+  let lowest = sortPorcentage.reverse().slice(0, 5);
+
+  let sortCapacity = eventsSort(statsEvent, 'capacity');
+  let capacity = sortCapacity.slice(0, 5);
+
+  for (let i = 0; i < 5; i++) {
+    eventsStatistics.insertAdjacentHTML('beforeend',
+    tableRow([
+      `${highest[i].name} (${highest[i].porcentage}%)`,
+      `${lowest[i].name} (${lowest[i].porcentage}%)`,
+      `${capacity[i].name} (${capacity[i].capacity})`
+    ]))
+  }
+  categoryStatistics(upcomingsEventsStatistics, upcomingsEvents)
+  categoryStatistics(pastEventsStatistics, pastEvents)
+};
+
+let categoryStatistics = (container, events) => {
+  categories.map(category =>{
+    const categoryArray = []
+    events.map(event => {
+      if(category.name === event.category){
+        categoryArray.push(event)
+      }
+    })
+    let capacity = 0;
+    let assistance = 0;
+    let revenues = 0;
+    categoryArray.map( event =>{
+      capacity += parseInt(event.capacity)
+      assistance += parseInt(event.assistance) || parseInt(event.estimate)
+      revenues += event.price * event.assistance || event.price * event.estimate
+    })
+    let porcentage = (assistance / capacity)*100
+    porcentage ? porcentage = porcentage.toFixed(2) : porcentage = 0;
+    container.insertAdjacentHTML('beforeend', tableRow([
+      category.name,
+      `$${revenues}`,
+      `${porcentage}%`
+    ]))
+  })
 }
 
+const tableRow = (content) => {
+  return `
+  <tr>
+    <td>${content[0]}</td>
+    <td>${content[1]}</td>
+    <td>${content[2]}</td>
+  </tr> `
+};
+
+const eventsSort = (events, attribute) => {
+  events.sort((a, b) => {
+    return b[attribute] - a[attribute]
+  })
+  return events 
+};
+
+
+let URLactual = window.location.pathname.split("/").pop();
+
+function mainRender(id,eventos,flag){
+  flag ? null : selectCheck()
+  console.log(eventos)
+  actualEvents = eventos 
+
+  actualId = id
+  createCards();
+  checkListener();
+  searchEvent();
+  buttonListener();
+};
+
+const URLexists = async(flag) => {
+  if (URLactual === "index.html" || URLactual === "") {
+    allEvents = await getEventsAsync('./js/events.json'); 
+    mainRender("#container_home", allEvents.events, flag);
+  } else if (URLactual === "upcomings_events.html") {
+    allEvents = await getEventsAsync('../js/events.json');
+    mainRender("#container_upcoming", upcomingsEvents, flag);
+  } else if (URLactual === "past_events.html") {
+    allEvents = await getEventsAsync('../js/events.json')
+    mainRender("#container_past", pastEvents, flag);
+  } else if (URLactual === "details.html"){
+  viewDetail();
+  } else if(URLactual === "stats.html"){
+    allEvents = await getEventsAsync('../js/events.json');
+    stats();
+  }
+};
+window.onload = URLexists(false);
 
