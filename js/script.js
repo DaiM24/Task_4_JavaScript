@@ -278,7 +278,7 @@ function viewDetail() {
   <div class="card text-bg-dark mb-3 m-auto" style="max-width: 900px;">
   <div class="row g-0 ">
     <div class="col-md-4">
-      <img src="" class="img-fluid rounded-start detail-img" alt="${events.name}">
+      <img src="../assets/upcoming/cinema_3.jpg" class="img-fluid rounded-start detail-img" alt="${events.name}">
     </div>
     <div class="col-md-8" >
       <div class="card-body h-100 d-flex flex-column justify-content-center">
