@@ -1,4 +1,4 @@
-// const data = {
+
 //   fechaActual: "2022-01-01",
 //   eventos: [
 //     {
@@ -239,7 +239,7 @@ function card(data) {
   return `
   <div class="col event">
     <div class="card text-bg-dark h-100">
-      <img src="${data.image}" class="card-img-top" alt="${data.name}">
+      <img src="../assets/upcoming/cinema_3.jpg" class="card-img-top" alt="${data.name}">
       <div class="card-body text-center d-flex flex-column justify-content-between">
         <h5 class="card-title">${data.name}</h5>
         <p class="card-text">${data.description}</p>
@@ -345,7 +345,7 @@ function buttonListener(){
   });
 };
 
-// Funciones de stats 
+// Functions de stats 
 
 const stats = () => {
 
@@ -423,7 +423,6 @@ const eventsSort = (events, attribute) => {
   })
   return events 
 };
-
 
 let URLactual = window.location.pathname.split("/").pop();
 
